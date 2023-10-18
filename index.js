@@ -26,7 +26,19 @@ async function run() {
   try {
     await client.connect();
 
-    const userCollection = client.db('userDB').collection('users');
+    // databases
+    const brandsCollection = client.db('brandDB').collection('brands');
+    const bannersCollection = client.db('brandDB').collection('banners');
+
+    app.get('/brands', async (req, res) => {
+      const brands = await brandsCollection.find().toArray();
+      res.send(brands);
+    });
+
+    app.get('/banners', async (req, res) => {
+      const brands = await bannersCollection.find().toArray();
+      res.send(brands);
+    });
 
     await client.db('admin').command({ ping: 1 });
     console.log(
@@ -41,6 +53,7 @@ run().catch(console.dir);
 
 app.get('/', (req, res) => {
   res.send('Crud is running.....');
+  res.send();
 });
 
 app.listen(port, () => {
