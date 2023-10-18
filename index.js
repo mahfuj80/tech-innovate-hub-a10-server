@@ -29,15 +29,24 @@ async function run() {
     // databases
     const brandsCollection = client.db('brandDB').collection('brands');
     const bannersCollection = client.db('brandDB').collection('banners');
-
+    const productsCollection = client.db('brandDB').collection('products');
+    // get brands Name and Image
     app.get('/brands', async (req, res) => {
       const brands = await brandsCollection.find().toArray();
       res.send(brands);
     });
 
+    // Get Brands Banners
     app.get('/banners', async (req, res) => {
       const brands = await bannersCollection.find().toArray();
       res.send(brands);
+    });
+
+    // Create A single Data To database
+    app.post('/products', async (req, res) => {
+      const product = req.body;
+      const result = await productsCollection.insertOne(product);
+      res.send(result);
     });
 
     await client.db('admin').command({ ping: 1 });
