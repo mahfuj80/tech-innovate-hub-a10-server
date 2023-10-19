@@ -30,6 +30,8 @@ async function run() {
     const brandsCollection = client.db('brandDB').collection('brands');
     const bannersCollection = client.db('brandDB').collection('banners');
     const productsCollection = client.db('brandDB').collection('products');
+    const cartCollection = client.db('brandDB').collection('cart');
+
     // get brands Name and Image
     app.get('/brands', async (req, res) => {
       const brands = await brandsCollection.find().toArray();
@@ -42,10 +44,17 @@ async function run() {
       res.send(brands);
     });
 
-    // Create A single Data To database
+    // Create A single Data To products dataset
     app.post('/products', async (req, res) => {
       const product = req.body;
       const result = await productsCollection.insertOne(product);
+      res.send(result);
+    });
+
+    // Create A single Product to cart datasets
+    app.post('/cart', async (req, res) => {
+      const product = req.body;
+      const result = await cartCollection.insertOne(product);
       res.send(result);
     });
 
@@ -64,12 +73,10 @@ async function run() {
 
     app.get('/update-products/:id', async (req, res) => {
       const id = req.params.id;
-      console.log('id', id);
       const query = {
         _id: new ObjectId(id),
       };
       const result = await productsCollection.findOne(query);
-      console.log(result);
       res.send(result);
     });
 
@@ -94,11 +101,13 @@ async function run() {
           rating: data.rating,
         },
       };
+
       const result = await productsCollection.updateOne(
         filter,
         updatedData,
         options
       );
+
       res.send(result);
     });
 
