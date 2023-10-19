@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 
 // middleware
@@ -49,7 +49,7 @@ async function run() {
       res.send(result);
     });
 
-    // Get
+    // Get products by brand name
 
     app.get('/products/:brand', async (req, res) => {
       const brand = req.params.brand;
@@ -57,6 +57,48 @@ async function run() {
         brandName: brand,
       };
       const result = await productsCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // get single Product using _id
+
+    app.get('/update-products/:id', async (req, res) => {
+      const id = req.params.id;
+      console.log('id', id);
+      const query = {
+        _id: new ObjectId(id),
+      };
+      const result = await productsCollection.findOne(query);
+      console.log(result);
+      res.send(result);
+    });
+
+    // update single Product
+
+    app.put('/update-products/:id', async (req, res) => {
+      const id = req.params.id;
+      const data = req.body;
+
+      const filter = {
+        _id: new ObjectId(id),
+      };
+      const options = { upsert: true };
+      const updatedData = {
+        $set: {
+          name: data.name,
+          description: data.description,
+          image: data.image,
+          brandName: data.brandName,
+          type: data.type,
+          price: data.price,
+          rating: data.rating,
+        },
+      };
+      const result = await productsCollection.updateOne(
+        filter,
+        updatedData,
+        options
+      );
       res.send(result);
     });
 
