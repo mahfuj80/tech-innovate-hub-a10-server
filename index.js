@@ -57,8 +57,12 @@ async function run() {
     });
 
     // Get all Cart Products form database
-    app.get('/cart', async (req, res) => {
-      const cartProducts = await cartCollection.find().toArray();
+    app.get('/cart/:email', async (req, res) => {
+      const userEmail = req.params.email;
+      const query = {
+        email: userEmail,
+      };
+      const cartProducts = await cartCollection.find(query).toArray();
       res.send(cartProducts);
     });
 
